@@ -1,0 +1,321 @@
+\documentclass[12pt,fleqn,a4paper]{report}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{microtype}
+\usepackage{csquotes}
+\usepackage{geometry}
+\geometry{a4paper, top=2.5cm, bottom=2.5cm, left=2.5cm, right=2.5cm}
+
+% ─── Packages ───────────────────────────────────────────────────────────────
+\usepackage{amsmath, amssymb, rotating, lscape, amsthm, makeidx}
+\usepackage{fancybox}
+\usepackage[table]{xcolor}
+\usepackage{graphicx, epsfig, epstopdf, subfig}
+\usepackage{fancyhdr, float, latexsym, euscript}
+\usepackage{multirow, algorithm, algorithmic, minitoc}
+\usepackage[english,french]{babel}
+\usepackage{listings}
+\usepackage{titlesec}
+\usepackage[Conny]{fncychap}
+\usepackage{caption}
+\usepackage{array, makecell}
+\usepackage{hyperref}
+\usepackage{lettrine}
+\usepackage{booktabs}
+\usepackage{enumitem}
+\usepackage{pifont}
+\usepackage{tcolorbox}
+\usepackage{mdframed}
+
+\graphicspath{{images/}}
+
+% ─── Helpers pour compiler même sans images ──────────────────────────────────
+\newcommand{\includegraphicsifexists}[2][]{%
+  \IfFileExists{#2}{\includegraphics[#1]{#2}}{%
+    \fbox{\parbox[c][0.22\textheight][c]{0.9\linewidth}{\centering\ttfamily Image manquante\\\small #2}}%
+  }%
+}
+
+% ─── MiniTOC ────────────────────────────────────────────────────────────────
+\dominitoc
+\mtcselectlanguage{french}
+
+% ─── En-tête / Pied de page ─────────────────────────────────────────────────
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\small\nouppercase\leftmark}
+\renewcommand{\headrulewidth}{0.4pt}
+\fancyfoot[C]{\thepage}
+\renewcommand{\footrulewidth}{0.4pt}
+\setlength{\headheight}{14pt}
+
+% ─── Interligne ─────────────────────────────────────────────────────────────
+\renewcommand{\baselinestretch}{1.15}
+
+% ─── Couleurs ───────────────────────────────────────────────────────────────
+\definecolor{primaryblue}{RGB}{31,73,125}
+\definecolor{lightblue}{RGB}{217,235,249}
+\definecolor{codegray}{RGB}{245,245,245}
+\definecolor{codegreen}{RGB}{0,128,0}
+\definecolor{codepurple}{RGB}{128,0,128}
+
+% ─── Listings ───────────────────────────────────────────────────────────────
+\lstset{
+  backgroundcolor=\color{codegray},
+  commentstyle=\color{codegreen},
+  keywordstyle=\color{primaryblue}\bfseries,
+  numberstyle=\tiny\color{gray},
+  stringstyle=\color{codepurple},
+  basicstyle=\ttfamily\footnotesize,
+  breakatwhitespace=false,
+  breaklines=true,
+  captionpos=b,
+  keepspaces=true,
+  numbers=left,
+  numbersep=5pt,
+  showspaces=false,
+  showstringspaces=false,
+  showtabs=false,
+  tabsize=2,
+  frame=single,
+  rulecolor=\color{gray!50},
+  xleftmargin=10pt,
+  xrightmargin=5pt
+}
+
+% ─── Numérotation des sections ───────────────────────────────────────────────
+\makeatletter
+\renewcommand{\thesection}{\@arabic\c@section}
+\makeatother
+
+\begin{document}
+\renewcommand{\labelitemi}{\textbullet}
+\pagenumbering{gobble}
+
+% ─── Page de garde ───────────────────────────────────────────────────────────
+\begin{titlepage}
+\noindent
+\begin{minipage}[c]{.25\textwidth}
+  \centering
+  \includegraphicsifexists[width=30mm]{Logo UTM.png}
+\end{minipage}%
+\hfill
+\begin{minipage}[c]{.42\textwidth}
+  \centering
+  {\textbf{Université de Tunis El Manar}}\\[4pt]
+  {\textbf{École Nationale d'Ingénieurs de Tunis}}
+\end{minipage}%
+\hfill
+\begin{minipage}[c]{.28\textwidth}
+  \flushright
+  \includegraphicsifexists[width=45mm]{LOGO_ENIT_300.png}
+\end{minipage}
+
+\vspace{0.6cm}
+\begin{center}
+  \large{Département des Technologies de l'Information et de la Communication}\\[6pt]
+  \textbf{\large Rapport de Projet de Fin d'Année -- 1\textsuperscript{ère} année}
+\end{center}
+
+\vspace{0.4cm}
+\hrule height 1.5pt
+\vspace{0.3cm}
+\begin{center}
+  \LARGE\textbf{\color{primaryblue}
+  Conception et Réalisation d'une Application\\[6pt]
+  de Traduction Langue des Signes $\leftrightarrow$ Texte}
+\end{center}
+\vspace{0.3cm}
+\hrule height 1.5pt
+
+\vspace{1.2cm}
+
+\begin{center}
+\begin{tcolorbox}[colback=lightblue, colframe=primaryblue, width=0.75\textwidth,
+                  title={\color{white}\textbf{Équipe du projet}}, fonttitle=\large]
+  \centering
+  {\large\textbf{BEN AICHA Maher}}\\[6pt]
+  {\large\textbf{BALEGI Mariem}}\\[10pt]
+  {\normalsize Classe~: \textbf{2AINFO}}
+\end{tcolorbox}
+\end{center}
+
+\vspace{0.8cm}
+\begin{center}
+  {\large Encadré par :}\\[4pt]
+  {\large\textbf{Mr. HAMMAMI Hamza}}
+\end{center}
+
+\vfill
+\begin{center}
+  {\large Année universitaire : \textbf{2025--2026}}
+\end{center}
+\end{titlepage}
+
+% ─── Résumé ──────────────────────────────────────────────────────────────────
+\chapter*{Résumé}
+\markboth{\small{Résumé}}{\small{Résumé}}
+\addcontentsline{toc}{chapter}{Résumé}
+
+Ce rapport présente la conception et la réalisation d'une application mobile intelligente de traduction bidirectionnelle entre la Langue des Signes Tunisienne (LST) et le texte. Face aux barrières de communication qui persistent entre les personnes sourdes ou malentendantes et les personnes entendantes dans les contextes quotidiens — services publics, santé, éducation — notre solution exploite les avancées récentes en vision par ordinateur et en intelligence artificielle.
+
+L'application, développée sous Flutter pour les plateformes iOS et Android, s'articule autour de deux modules fonctionnels complémentaires. Le premier module permet la reconnaissance en temps réel des gestes via la caméra du dispositif mobile~: les mouvements des mains sont capturés, leurs points clés extraits grâce à MediaPipe, puis classifiés par un modèle de deep learning (réseau LSTM entraîné sous TensorFlow/Keras). Le second module assure la traduction inverse~: un texte saisi par l'utilisateur entendant est converti en une séquence de signes animés issus d'une bibliothèque vidéo.
+
+Le backend exposé via une API REST (FastAPI) assure l'intégration entre le moteur d'IA Python et l'application mobile, tandis que Firebase gère l'authentification, le stockage des données et la synchronisation en temps réel.
+
+\bigskip
+\textbf{Mots-clés~:} langue des signes tunisienne, application mobile, Flutter, intelligence artificielle, deep learning, MediaPipe, LSTM, TensorFlow, vision par ordinateur, accessibilité numérique, API REST, Firebase.
+
+% ─── Abstract ────────────────────────────────────────────────────────────────
+\chapter*{Abstract}
+\markboth{\small{Abstract}}{\small{Abstract}}
+\addcontentsline{toc}{chapter}{Abstract}
+
+This report presents the design and implementation of an intelligent mobile application for bidirectional translation between Tunisian Sign Language (TSL) and text. To address the communication barriers that persist between deaf or hard-of-hearing individuals and hearing people in everyday contexts — public services, healthcare, education — our solution leverages recent advances in computer vision and artificial intelligence.
+
+The application, developed with Flutter for iOS and Android, is built around two complementary functional modules. The first module enables real-time gesture recognition via the mobile device's camera: hand movements are captured, their key points extracted using MediaPipe, and then classified by a deep learning model (LSTM network trained with TensorFlow/Keras). The second module handles the reverse translation: text entered by a hearing user is converted into an animated sign sequence drawn from a video library.
+
+A REST API backend (FastAPI) integrates the Python AI engine with the mobile application, while Firebase manages authentication, data storage, and real-time synchronization.
+
+\bigskip
+\textbf{Keywords:} Tunisian sign language, mobile application, Flutter, artificial intelligence, deep learning, MediaPipe, LSTM, TensorFlow, computer vision, digital accessibility, REST API, Firebase.
+
+\chapter*{Dédicace}
+\addcontentsline{toc}{chapter}{Dédicace}
+\begin{center}
+\textit{À nos chers parents,}
+\end{center}
+\medskip
+Ce travail est le fruit de nombreuses heures de dévouement, d'apprentissage et de passion. Votre soutien indéfectible, votre amour et vos encouragements ont été les piliers sur lesquels nous nous sommes appuyés tout au long de ce projet.
+\vspace{2cm}
+\begin{flushright}
+\textit{Maher Ben Aicha et Mariem Balegi}
+\end{flushright}
+
+\chapter*{Remerciements}
+\markboth{\small{Remerciements}}{\small{Remerciements}}
+\addcontentsline{toc}{chapter}{Remerciements}
+Nous souhaitons exprimer notre profonde gratitude envers toutes les personnes qui ont contribué à la réalisation de ce travail, et en particulier notre encadrant \textbf{Monsieur Hamza Hammami} pour ses précieux conseils et sa disponibilité.
+
+% ─── Tables des matières / figures / tableaux ─────────────────────────────────
+\dominitoc
+\tableofcontents
+\adjustmtc
+\cleardoublepage
+\listoffigures
+\cleardoublepage
+\listoftables
+\cleardoublepage
+
+\pagenumbering{arabic}
+\adjustmtc
+
+\chapter*{Introduction générale}
+\markboth{\small{Introduction générale}}{\small{Introduction générale}}
+\addcontentsline{toc}{chapter}{Introduction générale}
+\lettrine{L}{}'évolution rapide des technologies de l'information et de l'intelligence artificielle transforme profondément notre manière d'interagir avec le monde numérique. Parmi les défis que ces avancées permettent d'aborder, la communication entre les personnes sourdes ou malentendantes et les personnes entendantes demeure une problématique majeure.
+
+L'application repose sur deux modules complémentaires~:
+\begin{itemize}[leftmargin=1.5cm]
+  \item \textbf{Signes → Texte}~: la caméra capte les gestes, extrait les points clés des mains et les soumet à un modèle entraîné.
+  \item \textbf{Texte → Signes}~: un message saisi est converti en une séquence de signes animés (vidéos ou frames concaténées).
+\end{itemize}
+
+\chapter{Contexte, langue des signes et reconnaissance gestuelle}
+\minitoc
+\newpage
+\section{Introduction}
+Ce chapitre pose les fondements du projet en abordant le contexte, les principes de la langue des signes, et les bases de la reconnaissance gestuelle par ordinateur.
+
+\section{Communication et accessibilité numérique}
+\subsection{Inclusion des personnes sourdes et malentendantes}
+Selon l’OMS, plus de 430 millions de personnes souffrent d’une déficience auditive invalidante dans le monde, et ce chiffre devrait augmenter d’ici 2050. En Tunisie, la communauté sourde utilise la Langue des Signes Tunisienne (LST), un système linguistique à part entière.
+
+\subsection{Technologies d'assistance existantes}
+\begin{figure}[H]
+  \centering
+  \includegraphicsifexists[width=0.95\textwidth]{fig_pipeline.png}
+  \caption{Panorama des technologies d'assistance pour les personnes sourdes}
+  \label{fig:techno_assistance}
+\end{figure}
+
+\section{Bases de la reconnaissance gestuelle par ordinateur}
+\subsection{Détection des points clés (keypoints)}
+Notre système s'appuie sur \textbf{MediaPipe Hands}, qui détecte 21 points clés sur chaque main en temps réel.
+
+\begin{figure}[H]
+  \centering
+  \includegraphicsifexists[width=0.95\textwidth]{fig_keypoints.png}
+  \caption{Points clés (keypoints) détectés par MediaPipe Hands}
+  \label{fig:keypoints_mediapipe}
+\end{figure}
+
+\chapter{\texorpdfstring{Techniques de traduction Signes $\leftrightarrow$ Texte}{Techniques de traduction Signes <-> Texte}}
+\minitoc
+\newpage
+\section{Introduction}
+Ce chapitre présente les techniques et algorithmes utilisés pour la traduction entre la langue des signes et le texte.
+
+\section{Techniques de reconnaissance des signes}
+\subsection{Architecture du modèle retenu}
+\begin{lstlisting}[language=Python, caption={Architecture du modèle LSTM (TensorFlow/Keras)}]
+model = Sequential([
+    LSTM(64, return_sequences=True, activation='relu',
+         input_shape=(N_FRAMES, N_FEATURES)),
+    Dropout(0.3),
+    LSTM(128, return_sequences=True, activation='relu'),
+    Dropout(0.3),
+    LSTM(64, return_sequences=False, activation='relu'),
+    Dense(64, activation='relu'),
+    Dense(N_CLASSES, activation='softmax')
+])
+\end{lstlisting}
+
+\section{\texorpdfstring{Traduction Texte $\rightarrow$ Langue des Signes}{Traduction Texte -> Langue des Signes}}
+Dans l’implémentation, le texte est tokenisé en mots, puis chaque mot est mappé à un contenu visuel (vidéo ou frames). Les mots inconnus peuvent être signalés à l’utilisateur.
+
+\chapter{Conception et architecture de l'application}
+\minitoc
+\newpage
+\section{Architecture globale}
+L'application repose sur une architecture en trois couches : Flutter (présentation), API FastAPI (métier), et Firebase (données).
+
+\begin{figure}[H]
+  \centering
+  \includegraphicsifexists[width=0.98\textwidth]{fig_architecture.png}
+  \caption{Architecture globale du système}
+  \label{fig:architecture}
+\end{figure}
+
+\chapter{Implémentation, tests et évaluation de la solution}
+\minitoc
+\newpage
+\section{API Backend – FastAPI}
+\begin{lstlisting}[language=Python, caption={Extrait API — Texte vers vidéo de signes}]
+@app.get("/text_to_sign")
+async def text_to_sign(text: str = ""):
+    # Construit une vidéo MP4 en concaténant les frames des mots connus.
+    ...
+\end{lstlisting}
+
+\chapter*{Conclusion générale}
+\markboth{\small{Conclusion générale}}{\small{Conclusion générale}}
+\addcontentsline{toc}{chapter}{Conclusion générale}
+Ce projet propose une base fonctionnelle pour la traduction bidirectionnelle entre la LST et le texte. Les perspectives portent sur l’extension du vocabulaire, l’intégration des expressions faciales, et le déploiement on-device via TensorFlow Lite.
+
+\normalsize
+\begin{thebibliography}{99}
+\addcontentsline{toc}{chapter}{Bibliographie}
+\bibitem{mediapipe}
+Google LLC. \textit{MediaPipe – Cross-platform ML solutions}. \url{https://mediapipe.dev}.
+\bibitem{tensorflow}
+Abadi, M. et al. \textit{TensorFlow: A system for large-scale machine learning}. OSDI, 2016.
+\bibitem{flutter}
+Google LLC. \textit{Flutter – Build apps for any screen}. \url{https://flutter.dev}.
+\bibitem{fastapi}
+Ramírez, S. \textit{FastAPI – Modern, fast (high-performance), web framework for building APIs with Python}. \url{https://fastapi.tiangolo.com}.
+\end{thebibliography}
+
+\end{document}
+
