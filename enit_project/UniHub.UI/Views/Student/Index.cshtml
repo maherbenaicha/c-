@@ -1,0 +1,296 @@
+@{
+    ViewData["Title"] = "Dashboard Étudiant - ENIT";
+    var myDeptActivities = ViewBag.MyDepartmentActivities as List<UniHub.BL.Entities.Activity>;
+    var otherActivities = ViewBag.OtherActivities as List<UniHub.BL.Entities.Activity>;
+    var userDept = (UniHub.BL.Entities.Department)ViewBag.UserDepartment;
+    var currentUserId = ViewBag.CurrentUserId as string;
+}
+
+<div class="container mt-4">
+    <!-- En-tête avec photo de profil -->
+    <div class="card mb-4 border-0 shadow-sm">
+        <div class="card-body d-flex align-items-center gap-3">
+            <div>
+                @{
+                    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                }
+                <img src="@Url.Action("ProfilePhoto", "Student", new { id = userId })"
+                     alt="Photo de profil"
+                     class="rounded-circle border"
+                     style="width:70px; height:70px; object-fit:cover;"
+                     onerror="this.src='https://ui-avatars.com/api/?name=Etudiant&background=1a3c6e&color=fff&size=70';" />
+            </div>
+            <div>
+                <h4 class="mb-0">Bienvenue sur <strong>ENIT Hub</strong></h4>
+                <span class="text-muted">Département : <strong>@userDept</strong></span>
+            </div>
+            <div class="ms-auto">
+                <button class="btn btn-outline-primary btn-sm" data-bs-toggle="modal" data-bs-target="#photoModal">
+                    <i class="bi bi-camera"></i> Changer ma photo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <!-- Activités de mon département -->
+    <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0"><i class="bi bi-calendar-check"></i> Activités de mon département — @userDept</h4>
+        </div>
+        <div class="card-body">
+            @if (myDeptActivities != null && myDeptActivities.Any())
+            {
+                <div class="row">
+                    @foreach (var activity in myDeptActivities)
+                    {
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 border-primary shadow-sm">
+                                @if (activity.EventPhoto != null)
+                                {
+                                    <img src="@Url.Action("EventPhoto", "Student", new { id = activity.Id })"
+                                         alt="Photo de l'événement" class="card-img-top"
+                                         style="height:180px; object-fit:cover;" />
+                                }
+                                <div class="card-body">
+                                    <h5 class="card-title">@activity.Title</h5>
+                                    <p class="card-text text-muted">@activity.Description</p>
+                                    <ul class="list-unstyled small">
+                                        <li><i class="bi bi-calendar"></i> <strong>Début:</strong> @activity.StartDate.ToString("dd/MM/yyyy HH:mm")</li>
+                                        @if (activity.EndDate.HasValue)
+                                        {
+                                            <li><i class="bi bi-calendar"></i> <strong>Fin:</strong> @activity.EndDate.Value.ToString("dd/MM/yyyy HH:mm")</li>
+                                        }
+                                        @if (!string.IsNullOrEmpty(activity.Location))
+                                        {
+                                            <li><i class="bi bi-geo-alt"></i> <strong>Lieu:</strong> @activity.Location</li>
+                                        }
+                                        @if (activity.MaxParticipants.HasValue)
+                                        {
+                                            <li><i class="bi bi-people"></i> <strong>Participants max:</strong> @activity.MaxParticipants</li>
+                                        }
+                                        <li><i class="bi bi-person"></i> <strong>Créé par:</strong> @activity.CreatedByUser.FullName</li>
+                                    </ul>
+
+                                    <!-- Section commentaires -->
+                                    <hr />
+                                    <h6><i class="bi bi-chat-dots"></i> Commentaires (@activity.Comments.Count)</h6>
+                                    @if (activity.Comments.Any())
+                                    {
+                                        <div class="mb-2" style="max-height:150px; overflow-y:auto;">
+                                            @foreach (var comment in activity.Comments.OrderByDescending(c => c.CreatedDate))
+                                            {
+                                                <div class="d-flex align-items-start gap-2 mb-2">
+                                                    <img src="@Url.Action("ProfilePhoto", "Student", new { id = comment.UserId })"
+                                                         alt="avatar" class="rounded-circle"
+                                                         style="width:32px; height:32px; object-fit:cover;"
+                                                         onerror="this.src='https://ui-avatars.com/api/?name=@(comment.User.FirstName)&background=1a3c6e&color=fff&size=32';" />
+                                                    <div class="flex-grow-1">
+                                                        <div class="bg-light rounded p-2 small">
+                                                            <strong>@comment.User.FullName</strong>
+                                                            <span class="text-muted ms-1" style="font-size:0.75rem;">@comment.CreatedDate.ToString("dd/MM HH:mm")</span>
+                                                            <p class="mb-0">@comment.Content</p>
+                                                        </div>
+                                                    </div>
+                                                    @if (comment.UserId == currentUserId)
+                                                    {
+                                                        <form asp-action="DeleteComment" method="post" class="d-inline">
+                                                            @Html.AntiForgeryToken()
+                                                            <input type="hidden" name="id" value="@comment.Id" />
+                                                            <button type="submit" class="btn btn-link text-danger p-0" title="Supprimer"
+                                                                    onclick="return confirm('Supprimer ce commentaire ?')">
+                                                                <i class="bi bi-trash" style="font-size:0.85rem;"></i>
+                                                            </button>
+                                                        </form>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    else
+                                    {
+                                        <p class="text-muted small">Aucun commentaire. Soyez le premier !</p>
+                                    }
+
+                                    <!-- Formulaire d'ajout de commentaire -->
+                                    <form asp-action="AddComment" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="ActivityId" value="@activity.Id" />
+                                        <div class="input-group mt-2">
+                                            <input type="text" name="Content" class="form-control form-control-sm"
+                                                   placeholder="Écrire un commentaire..." maxlength="1000" required />
+                                            <button type="submit" class="btn btn-primary btn-sm">
+                                                <i class="bi bi-send"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Aucune activité disponible pour votre département.
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Activités des autres départements -->
+    <div class="card shadow-sm">
+        <div class="card-header bg-secondary text-white">
+            <h4 class="mb-0"><i class="bi bi-compass"></i> Découvrir les activités des autres départements</h4>
+        </div>
+        <div class="card-body">
+            @if (otherActivities != null && otherActivities.Any())
+            {
+                <div class="row">
+                    @foreach (var activity in otherActivities)
+                    {
+                        <div class="col-md-6 mb-4">
+                            <div class="card h-100 shadow-sm">
+                                @if (activity.EventPhoto != null)
+                                {
+                                    <img src="@Url.Action("EventPhoto", "Student", new { id = activity.Id })"
+                                         alt="Photo de l'événement" class="card-img-top"
+                                         style="height:180px; object-fit:cover;" />
+                                }
+                                <div class="card-header bg-light">
+                                    <span class="badge bg-info text-dark">@activity.Department</span>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">@activity.Title</h5>
+                                    <p class="card-text text-muted">@activity.Description</p>
+                                    <ul class="list-unstyled small">
+                                        <li><i class="bi bi-calendar"></i> <strong>Début:</strong> @activity.StartDate.ToString("dd/MM/yyyy HH:mm")</li>
+                                        @if (!string.IsNullOrEmpty(activity.Location))
+                                        {
+                                            <li><i class="bi bi-geo-alt"></i> <strong>Lieu:</strong> @activity.Location</li>
+                                        }
+                                        <li><i class="bi bi-person"></i> <strong>Créé par:</strong> @activity.CreatedByUser.FullName</li>
+                                    </ul>
+
+                                    <!-- Commentaires -->
+                                    <hr />
+                                    <h6><i class="bi bi-chat-dots"></i> Commentaires (@activity.Comments.Count)</h6>
+                                    @if (activity.Comments.Any())
+                                    {
+                                        <div class="mb-2" style="max-height:120px; overflow-y:auto;">
+                                            @foreach (var comment in activity.Comments.OrderByDescending(c => c.CreatedDate))
+                                            {
+                                                <div class="d-flex align-items-start gap-2 mb-2">
+                                                    <img src="@Url.Action("ProfilePhoto", "Student", new { id = comment.UserId })"
+                                                         alt="avatar" class="rounded-circle"
+                                                         style="width:28px; height:28px; object-fit:cover;"
+                                                         onerror="this.src='https://ui-avatars.com/api/?name=U&background=1a3c6e&color=fff&size=28';" />
+                                                    <div class="flex-grow-1">
+                                                        <div class="bg-light rounded p-2 small">
+                                                            <strong>@comment.User.FullName</strong>
+                                                            <span class="text-muted ms-1" style="font-size:0.75rem;">@comment.CreatedDate.ToString("dd/MM HH:mm")</span>
+                                                            <p class="mb-0">@comment.Content</p>
+                                                        </div>
+                                                    </div>
+                                                    @if (comment.UserId == currentUserId)
+                                                    {
+                                                        <form asp-action="DeleteComment" method="post" class="d-inline">
+                                                            @Html.AntiForgeryToken()
+                                                            <input type="hidden" name="id" value="@comment.Id" />
+                                                            <button type="submit" class="btn btn-link text-danger p-0" title="Supprimer"
+                                                                    onclick="return confirm('Supprimer ?')">
+                                                                <i class="bi bi-trash" style="font-size:0.8rem;"></i>
+                                                            </button>
+                                                        </form>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+                                    }
+                                    <form asp-action="AddComment" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="ActivityId" value="@activity.Id" />
+                                        <div class="input-group mt-2">
+                                            <input type="text" name="Content" class="form-control form-control-sm"
+                                                   placeholder="Commenter..." maxlength="1000" required />
+                                            <button type="submit" class="btn btn-secondary btn-sm">
+                                                <i class="bi bi-send"></i>
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    <i class="bi bi-info-circle"></i> Aucune activité disponible dans les autres départements.
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Modal: Changer photo de profil -->
+<div class="modal fade" id="photoModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title"><i class="bi bi-camera"></i> Changer ma photo de profil</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form asp-action="UpdateProfilePhoto" method="post" enctype="multipart/form-data">
+                @Html.AntiForgeryToken()
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label class="form-label">Choisir une photo</label>
+                        <input type="file" name="profilePhoto" class="form-control" accept="image/*"
+                               onchange="previewModal(this)" required />
+                    </div>
+                    <img id="modalPreview" src="#" alt="Aperçu" class="rounded-circle d-none mx-auto d-block"
+                         style="width:100px; height:100px; object-fit:cover;" />
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Annuler</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="bi bi-upload"></i> Enregistrer
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function previewModal(input) {
+            var preview = document.getElementById('modalPreview');
+            if (input.files && input.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function (e) {
+                    preview.src = e.target.result;
+                    preview.classList.remove('d-none');
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+    </script>
+}

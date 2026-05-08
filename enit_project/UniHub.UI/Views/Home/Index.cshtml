@@ -1,0 +1,42 @@
+@{
+    ViewData["Title"] = "Accueil — ENIT Hub";
+}
+
+<div class="text-center py-5">
+    <h1 class="display-4 fw-bold" style="color:#1a3c6e;">
+        <i class="bi bi-mortarboard-fill"></i> Bienvenue sur <span style="color:#e63946;">ENIT</span> Hub
+    </h1>
+    <p class="lead text-muted">La plateforme des activités et événements de l'École Nationale d'Ingénieurs de Tunis</p>
+    <hr class="my-4" />
+    @if (User.Identity != null && User.Identity.IsAuthenticated)
+    {
+        <p>Vous êtes connecté. Accédez à votre espace :</p>
+        @if (User.IsInRole("Student"))
+        {
+            <a class="btn btn-primary btn-lg" asp-controller="Student" asp-action="Index">
+                <i class="bi bi-calendar-event"></i> Voir les événements
+            </a>
+        }
+        else if (User.IsInRole("DepartmentAdmin"))
+        {
+            <a class="btn btn-primary btn-lg" asp-controller="DepartmentAdmin" asp-action="Index">
+                <i class="bi bi-briefcase"></i> Mon dashboard admin
+            </a>
+        }
+        else if (User.IsInRole("SuperAdmin"))
+        {
+            <a class="btn btn-danger btn-lg" asp-controller="SuperAdmin" asp-action="Index">
+                <i class="bi bi-gear"></i> Administration
+            </a>
+        }
+    }
+    else
+    {
+        <a class="btn btn-primary btn-lg me-2" asp-area="Identity" asp-page="/Account/Login">
+            <i class="bi bi-box-arrow-in-right"></i> Se connecter
+        </a>
+        <a class="btn btn-outline-secondary btn-lg" asp-area="Identity" asp-page="/Account/Register">
+            <i class="bi bi-person-plus"></i> S'inscrire
+        </a>
+    }
+</div>
